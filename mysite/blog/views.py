@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Post, Category
-from .forms import NewCommentForm
+from .forms import NewCommentForm, PostSearchForm
 from django.views.generic import ListView
+from django.db.models import Q
 # from django.http import HttpResponseRedirect
 
 
@@ -81,3 +82,31 @@ def category_menu(request):
         'category_menu': category_menu
     }
     return context
+
+
+def post_search(request):
+    form = PostSearchForm()
+
+    q = None
+    c = None
+    result = []
+    query = Q()
+
+    if 'q' in request.GET:
+        form = PostSearchForm(request.GET)
+        if form.is_valid():
+            q = form.cleaned_data['q']
+            c = form.cleaned_data['c']
+            if c is not None:
+                query &= Q(category=c)
+            if q is not None:
+                query &= Q(title__contains=q)
+
+            result = Post.objects.filter(query)
+
+    context = {
+        'form': form,
+        'q': q,
+        'result': result
+    }
+    return render(request, 'blog/search.html', context)
