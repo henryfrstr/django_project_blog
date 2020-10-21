@@ -4,7 +4,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Post, Category
 from .forms import NewCommentForm, PostSearchForm
 from django.views.generic import ListView
-from django.db.models import Q
+from django.contrib.auth.decorators import login_required
 # from django.http import HttpResponseRedirect
 
 
@@ -14,8 +14,8 @@ def home_view(request):
     paginator = Paginator(post_list, 3)
 
     page_number = request.GET.get('page', 1)
-    print(request.GET)
-    print(page_number)
+    # print(request.GET)
+    # print(page_number)
 
     try:
         page_obj = paginator.page(page_number)
