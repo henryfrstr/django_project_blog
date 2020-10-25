@@ -1,4 +1,5 @@
 from django import forms
+from .models import Profile
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, PasswordChangeForm
@@ -72,13 +73,6 @@ class UserEditForm(forms.ModelForm):
         model = User
         fields = ('first_name', 'last_name', 'email')
 
-    def clean_email(self):
-        email = self.cleaned_data['email']
-        if len(User.objects.filter(email=email)) >= 1:
-            raise forms.ValidationError(
-                'Please use another Email, that is already taken')
-        return email
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['last_name'].required = False
@@ -129,3 +123,13 @@ class UserEditForm(forms.ModelForm):
 #             {'class': 'form-control', 'placeholder': 'Password'})
 #         self.fields['password2'].widget.attrs.update(
 #             {'class': 'form-control', 'placeholder': 'Repeat Password'})
+
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['bio', 'avatar']
+
+        widgets = {
+            'bio': forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}),
+        }

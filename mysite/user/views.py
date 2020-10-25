@@ -9,12 +9,25 @@ from django.conf import settings
 from django.contrib.auth import login
 from django.contrib.auth.models import User
 from .token import account_activation_token
-from .forms import RegistrationForm, UserEditForm
+from .forms import RegistrationForm, UserEditForm, UserProfileForm
 from django.core.mail import EmailMessage
 from django.contrib import messages
 from django.contrib.auth.views import PasswordChangeView
 from .forms import PwdChangeForm
 from django.urls import reverse_lazy
+from .models import Profile
+
+
+@login_required
+def avatar(request):
+    user = User.objects.get(username=request.user)
+    print(user.username)
+    print(request.user)
+    avatar = Profile.objects.filter(user=user)
+    context = {
+        'avatar': avatar
+    }
+    return context
 
 
 @login_required
@@ -27,16 +40,20 @@ def profile_edit(request):
     if request.method == 'POST':
         user_form = UserEditForm(instance=request.user,
                                  data=request.POST)
-        if user_form.is_valid():
+
+        profile_form = UserProfileForm(
+            request.POST, request.FILES, instance=request.user.profile)
+
+        if profile_form.is_valid() and user_form.is_valid():
             user_form.save()
-            messages.success(request, "Details successfully updated!")
-        else:
-            messages.warning(request, "Enter a valid input")
+            profile_form.save()
     else:
         user_form = UserEditForm(instance=request.user)
+        profile_form = UserProfileForm(instance=request.user.profile)
+
     return render(request,
                   'users/profile_update.html',
-                  {'user_form': user_form})
+                  {'user_form': user_form, 'profile_form': profile_form})
 
 
 def register(request):

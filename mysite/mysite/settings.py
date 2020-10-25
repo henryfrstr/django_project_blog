@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     # my_apps
     'blog',
     # 'blog.apps.BlogCongig',
-    'user',
+    # 'user',
+    'user.apps.UserConfig',
 
     # thirdparty
     'ckeditor',
@@ -71,6 +72,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'blog.views.category_menu',
+                'user.views.avatar'
                 # 'blog.views.home_view',
             ],
         },

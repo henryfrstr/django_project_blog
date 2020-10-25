@@ -1,7 +1,6 @@
 {% extends "base/base.html" %}
 {% block title %}Edit your account{% endblock %}
 {% block content %}
-
 <style>
     .update-form input {
         border: 2px solid #ccc;
@@ -21,14 +20,28 @@
 
                 <form class="form-reset p-4 rounded update-form" method="post" enctype="multipart/form-data">
 
-                    {% if user_form.is_valid %}
-
+                    {% if user_form.is_valid and profile_form.is_valid  %}
+                    <div class="alert alert-primary" role="alert">
+                        Details successfully updated!
+                    </div>
                     <p class="small text-center pt-0">
-                        <a href="{% url 'profile' %}">Back to Dashboard</a>
+                        <a href="{% url "profile" %}">Back to Dashboard</a>
                     </p>
                     {%else%}
                     <p class=" h4 mb-4 font-weight-bold">Change your details</p>
                     <p>You can edit your account using the following form:</p>
+                    {% endif %}
+
+                    {% if form.errors %}
+                    <div class="alert alert-primary" role="alert">
+                        Error: Please try again!
+                    </div>
+                    {% endif %}
+
+                    {% if profile_form.errors %}
+                    <div class="alert alert-primary" role="alert">
+                        Error: Filesize incorrect - has to be 100px by 100px
+                    </div>
                     {% endif %}
 
                     {% csrf_token %}
@@ -38,12 +51,23 @@
                     {{ user_form.last_name }}
                     <label class="small font-weight-bold">{{ user_form.email.label}}</label>
                     {{ user_form.email }}
+
+
+                    <label class="small font-weight-bold">{{ profile_form.bio.label}}</label>
+                    {{ profile_form.bio }}
+
+                    <div class="form-group pt-5">
+                        <label class="small font-weight-bold">{{ profile_form.avatar.label}}</label>
+                        {{ profile_form.avatar}}
+                    </div>
+
+
                     <button class="btn btn-primary btn-block py-2 mb-4 mt-5 font-weight-bold" type="submit"
                         value="Save changes">Save Changes</button>
                     <hr class="mb-3">
                     <p class=" h5 mb-2 pt-4 font-weight-bold">Delete Account</p>
                     <p class="small">If you would like to delete your account press the button below:</p>
-                    <a href="{% url 'delete_user' %}" class="btn btn-danger btn-block py-2 mb-4 mt-5 font-weight-bold"
+                    <a href="{% url "delete_user" %}" class="btn btn-danger btn-block py-2 mb-4 mt-5 font-weight-bold"
                         role="button" aria-pressed="true">Delete Account</a>
                 </form>
 
@@ -51,5 +75,4 @@
         </div>
     </section>
 </div>
-
 {% endblock %}
